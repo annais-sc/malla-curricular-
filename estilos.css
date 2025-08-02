@@ -1,214 +1,144 @@
 /* --- Variables de Color y Estilos Globales --- */
 :root {
-    --color-fondo: #fdf6f8; /* Rosa muy claro */
-    --color-principal: #f5b9c6; /* Rosa suave */
-    --color-aprobado: #ff1b82; /* Magenta */
-    --color-bloqueado: #e0e0e0; /* Gris claro */
-    --color-texto: #333;
-    --color-borde: #e8a9b7;
-    --sombra-caja: 0 4px 15px rgba(0, 0, 0, 0.07);
+    --color-fondo: #fdf6f8; /* Un rosa muy pálido para el fondo */
+    --color-texto: #4a4a4a;
+    --color-titulo: #d17a8b; /* Rosa más oscuro para los títulos */
+    --color-ramo: #ffffff;
+    --color-ramo-borde: #e0e0e0;
+    --color-ramo-aprobado: #f7dce3; /* Rosa suave para ramos aprobados */
+    --color-ramo-aprobado-texto: #b36b7d;
     --fuente-principal: 'Poppins', sans-serif;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
 }
 
 body {
     font-family: var(--fuente-principal);
     background-color: var(--color-fondo);
     color: var(--color-texto);
+    margin: 0;
+    padding: 20px;
     line-height: 1.6;
 }
 
-/* --- Encabezado y Título --- */
+/* --- Cabecera y Títulos --- */
 header {
     text-align: center;
-    padding: 2rem 1rem;
-    background-color: white;
-    border-bottom: 2px solid var(--color-principal);
+    margin-bottom: 40px;
 }
 
-h1 {
-    color: var(--color-principal);
+header h1 {
+    color: var(--color-titulo);
     font-weight: 600;
-    font-size: 2.5rem;
 }
 
-.motivacion {
+header p {
     font-style: italic;
     color: #888;
-    margin-top: 0.5rem;
 }
 
 /* --- Contenedor Principal de la Malla --- */
-main {
-    padding: 2rem 1rem;
-}
-
-#malla-curricular {
-    display: grid;
-    /* Crea 10 columnas, pero se ajustarán automáticamente */
-    grid-template-columns: repeat(10, 1fr);
-    gap: 1.5rem;
-    max-width: 1600px;
-    margin: 0 auto;
-    overflow-x: auto; /* Permite scroll horizontal en pantallas muy pequeñas */
-    padding-bottom: 1.5rem; /* Espacio para la barra de scroll */
-}
-
-/* --- Columna de Semestre --- */
-.semestre {
+.malla-container {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    min-width: 180px; /* Ancho mínimo para cada columna */
+    flex-direction: row; /* Organiza los semestres en columnas */
+    gap: 15px;
+    overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+    padding-bottom: 20px;
 }
 
-.semestre-titulo {
+/* --- Columnas de Semestres --- */
+.semestre {
+    flex: 1; /* Cada semestre ocupa el mismo espacio */
+    min-width: 200px; /* Ancho mínimo para cada columna */
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-ramo-borde);
+}
+
+.semestre h2 {
     text-align: center;
-    font-weight: 600;
-    color: var(--color-principal);
-    padding-bottom: 0.5rem;
-    border-bottom: 2px solid var(--color-borde);
+    color: var(--color-titulo);
+    font-size: 1.1em;
+    border-bottom: 2px solid var(--color-fondo);
+    padding-bottom: 10px;
+    margin-top: 0;
 }
 
-/* --- Estilo de cada Ramo --- */
+/* --- Cajas de Ramos Individuales --- */
 .ramo {
-    background-color: white;
-    padding: 1rem;
-    border: 1px solid var(--color-borde);
+    background-color: var(--color-ramo);
+    border: 1px solid var(--color-ramo-borde);
+    padding: 12px;
+    margin-bottom: 10px;
     border-radius: 8px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.9em;
     cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: var(--sombra-caja);
+    transition: all 0.3s ease; /* Transición suave para todos los cambios */
+    position: relative;
 }
 
 .ramo:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(209, 122, 139, 0.15);
 }
 
-/* --- Estados de los Ramos --- */
+/* --- Estilo para Ramos Aprobados --- */
 .ramo.aprobado {
-    background-color: var(--color-aprobado);
-    border-color: #8fb999;
-    color: var(--color-texto);
+    background-color: var(--color-ramo-aprobado);
+    color: var(--color-ramo-aprobado-texto);
     text-decoration: line-through;
-    text-decoration-thickness: 2px;
+    border-color: var(--color-ramo-aprobado-texto);
+    font-weight: 600;
 }
 
-.ramo.bloqueado {
-    background-color: var(--color-bloqueado);
-    border-color: #ccc;
-    cursor: not-allowed;
-    color: #888;
+/* --- Diseño Responsivo --- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    .malla-container {
+        flex-direction: column; /* Apila los semestres verticalmente */
+        overflow-x: hidden;
+    }
 }
 
-/* --- Estilos de la Ventana Modal --- */
+/* --- Estilos para el Modal de Requisitos --- */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
 
-.modal-contenido {
+.modal-content {
     background: white;
-    padding: 2rem;
-    border-radius: 10px;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
     width: 90%;
     max-width: 400px;
-    text-align: center;
     position: relative;
-    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
 }
 
-.modal-contenido h2 {
-    color: var(--color-principal);
-    margin-bottom: 1rem;
-}
-
-.modal-contenido p {
-    margin-bottom: 1rem;
-}
-
-#lista-requisitos {
-    list-style-type: none;
-    padding: 0;
-}
-
-#lista-requisitos li {
-    background-color: var(--color-fondo);
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border-radius: 5px;
-    border: 1px solid var(--color-borde);
-}
-
-.cerrar-modal {
+.modal-close {
     position: absolute;
     top: 10px;
     right: 15px;
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #aaa;
+    font-size: 2em;
     cursor: pointer;
+    color: #aaa;
 }
 
-.cerrar-modal:hover {
-    color: var(--color-texto);
-}
-
-/* --- Diseño Responsivo --- */
-@media (max-width: 1200px) {
-    #malla-curricular {
-        grid-template-columns: repeat(5, 1fr);
-    }
-}
-
-@media (max-width: 992px) {
-    h1 {
-        font-size: 2rem;
-    }
-    #malla-curricular {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-@media (max-width: 768px) {
-    #malla-curricular {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-@media (max-width: 576px) {
-    body {
-        font-size: 0.95rem;
-    }
-    h1 {
-        font-size: 1.8rem;
-    }
-    #malla-curricular {
-        /* Se convierte en una sola columna vertical para mejor visualización */
-        grid-template-columns: 1fr; 
-        gap: 0.5rem;
-    }
-    .semestre {
-        background-color: white;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
-        box-shadow: var(--sombra-caja);
-    }
+.modal-content h2 {
+    color: var(--color-titulo);
+    margin-top: 0;
 }
