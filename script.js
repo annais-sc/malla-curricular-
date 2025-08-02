@@ -1,10 +1,8 @@
-// Se ejecuta cuando todo el contenido de la página se ha cargado
+// Espera a que todo el HTML esté cargado para ejecutar el script
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- 1. DEFINICIÓN DE DATOS ---
-
-    // Lista completa de ramos con sus IDs, nombres, semestres y requisitos.
-    // Los IDs son únicos y se usan para identificar cada ramo.
+    // --- 1. DATOS DE LA CARRERA ---
+    // Definimos todos los ramos con un ID único, nombre, semestre y sus requisitos.
     const ramos = [
         // Semestre 1
         { id: 'derecho-empresarial', nombre: 'Derecho Empresarial', semestre: 1, requisitos: [] },
@@ -16,13 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Semestre 2
         { id: 'administracion-estrategica', nombre: 'Administración Estratégica', semestre: 2, requisitos: ['administracion-general'] },
         { id: 'algebra-ii', nombre: 'Álgebra II', semestre: 2, requisitos: ['algebra-i'] },
-        { id: 'calculo-i', nombre: 'Cálculo I', semestre: 2, requisitos: [] }, // Asumimos que no tiene pre-requisito directo de la lista
+        { id: 'calculo-i', nombre: 'Cálculo I', semestre: 2, requisitos: [] },
         { id: 'introduccion-economia', nombre: 'Introducción a la Economía', semestre: 2, requisitos: [] },
         { id: 'contabilidad-ii', nombre: 'Contabilidad II', semestre: 2, requisitos: ['contabilidad-i'] },
         { id: 'ingles-i', nombre: 'Inglés I', semestre: 2, requisitos: [] },
         { id: 'formacion-extra-1', nombre: 'Formación Integral Actividad Extra Programática', semestre: 2, requisitos: [] },
         // Semestre 3
-        { id: 'calculo-ii', nombre: 'Cálculo II', semestre: 3, requisitos: [] }, // Asumimos que requiere Cálculo I, pero no está en la lista de req.
+        { id: 'calculo-ii', nombre: 'Cálculo II', semestre: 3, requisitos: ['calculo-i'] },
         { id: 'marketing-i', nombre: 'Marketing I', semestre: 3, requisitos: ['administracion-estrategica'] },
         { id: 'microeconomia-i', nombre: 'Microeconomía I', semestre: 3, requisitos: ['introduccion-economia'] },
         { id: 'costos', nombre: 'Costos', semestre: 3, requisitos: ['contabilidad-i'] },
@@ -44,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
         { id: 'ingles-negocios-ii', nombre: 'Inglés Para Negocios II', semestre: 5, requisitos: ['ingles-negocios-i', 'ingles-ii'] },
         { id: 'formacion-extra-2', nombre: 'Formación Integral Actividad Extra Programática', semestre: 5, requisitos: [] },
         // Semestre 6
-        { id: 'comportamiento-org', nombre: 'Comportamiento Organizacional', semestre: 6, requisitos: [] }, // No especificado en la lista
+        { id: 'comportamiento-org', nombre: 'Comportamiento Organizacional', semestre: 6, requisitos: ['gestion-rrhh-i'] },
         { id: 'econometria', nombre: 'Econometría', semestre: 6, requisitos: ['estadistica-ii'] },
         { id: 'economia-internacional', nombre: 'Economía Internacional', semestre: 6, requisitos: ['macroeconomia-ii'] },
         { id: 'mercados-capitales', nombre: 'Mercados de Capitales', semestre: 6, requisitos: ['gestion-financiera-cp'] },
@@ -87,144 +85,97 @@ document.addEventListener('DOMContentLoaded', () => {
         "No te detengas hasta que te sientas orgulloso."
     ];
 
-    // --- 2. REFERENCIAS AL DOM ---
+    // --- 2. ELEMENTOS DEL DOM ---
     const mallaContainer = document.getElementById('malla-curricular');
     const fraseMotivadoraEl = document.getElementById('frase-motivadora');
     const modal = document.getElementById('modal-requisitos');
     const modalMensaje = document.getElementById('modal-mensaje');
     const modalClose = document.querySelector('.modal-close');
 
+    // --- 3. LÓGICA DE LA APLICACIÓN ---
 
-    // --- 3. FUNCIONES ---
+    // Carga los ramos aprobados desde el almacenamiento local o crea un conjunto vacío.
+    let ramosAprobados = new Set(JSON.parse(localStorage.getItem('ramosAprobados')) || []);
 
-    /**
-     * Carga el estado de los ramos aprobados desde el localStorage del navegador.
-     * @returns {Set<string>} Un Set con los IDs de los ramos aprobados.
-     */
-    const cargarEstado = () => {
-        const data = localStorage.getItem('ramosAprobados');
-        return data ? new Set(JSON.parse(data)) : new Set();
-    };
-
-    /**
-     * Guarda el estado actual de los ramos aprobados en el localStorage.
-     * @param {Set<string>} aprobados - El Set con los IDs de los ramos aprobados.
-     */
-    const guardarEstado = (aprobados) => {
-        // Convertimos el Set a un Array para poder guardarlo como JSON
-        localStorage.setItem('ramosAprobados', JSON.stringify(Array.from(aprobados)));
-    };
-
-    let ramosAprobados = cargarEstado();
-
-    /**
-     * Genera dinámicamente el HTML de la malla curricular.
-     */
+    // Genera el HTML de la malla curricular.
     const generarMalla = () => {
         const numSemestres = Math.max(...ramos.map(r => r.semestre));
-        
-        // Crea las columnas de los semestres
         for (let i = 1; i <= numSemestres; i++) {
-            const semestreDiv = document.createElement('div');
-            semestreDiv.className = 'semestre';
-            semestreDiv.innerHTML = `<h2>Semestre ${i}</h2>`;
-            mallaContainer.appendChild(semestreDiv);
+            mallaContainer.innerHTML += `<div class="semestre" data-semestre="${i}"><h2>Semestre ${i}</h2></div>`;
         }
-
-        // Añade cada ramo a su semestre correspondiente
         ramos.forEach(ramo => {
-            const ramoDiv = document.createElement('div');
-            ramoDiv.className = 'ramo';
-            ramoDiv.textContent = ramo.nombre;
-            ramoDiv.dataset.id = ramo.id; // Usamos data-attributes para guardar el id
-            
-            // Busca la columna del semestre y añade el ramo
-            mallaContainer.children[ramo.semestre - 1].appendChild(ramoDiv);
+            const semestreDiv = mallaContainer.querySelector(`.semestre[data-semestre='${ramo.semestre}']`);
+            semestreDiv.innerHTML += `<div class="ramo" data-id="${ramo.id}">${ramo.nombre}</div>`;
         });
     };
 
-    /**
-     * Actualiza la apariencia de todos los ramos según su estado (aprobado o no).
-     */
+    // Actualiza la apariencia de todos los ramos (aprobado, bloqueado, disponible).
     const actualizarVisualizacion = () => {
         document.querySelectorAll('.ramo').forEach(ramoDiv => {
-            if (ramosAprobados.has(ramoDiv.dataset.id)) {
+            const id = ramoDiv.dataset.id;
+            const ramoInfo = ramos.find(r => r.id === id);
+            
+            // Limpiamos clases de estado previas
+            ramoDiv.classList.remove('aprobado', 'bloqueado');
+
+            if (ramosAprobados.has(id)) {
                 ramoDiv.classList.add('aprobado');
             } else {
-                ramoDiv.classList.remove('aprobado');
+                const requisitosFaltantes = ramoInfo.requisitos.some(reqId => !ramosAprobados.has(reqId));
+                if (requisitosFaltantes) {
+                    ramoDiv.classList.add('bloqueado');
+                }
             }
         });
     };
     
-    /**
-     * Muestra el modal con un mensaje específico.
-     * @param {string} mensaje - El texto a mostrar en el modal.
-     */
-    const mostrarModal = (mensaje) => {
-        modalMensaje.innerHTML = mensaje;
-        modal.style.display = 'flex';
+    // Guarda el estado actual en el almacenamiento local.
+    const guardarEstado = () => {
+        localStorage.setItem('ramosAprobados', JSON.stringify([...ramosAprobados]));
     };
 
-    /**
-     * Oculta el modal.
-     */
-    const ocultarModal = () => {
-        modal.style.display = 'none';
-    };
+    // Maneja el clic en un ramo.
+    const handleRamoClick = (e) => {
+        if (!e.target.classList.contains('ramo')) return;
 
+        const ramoDiv = e.target;
+        const id = ramoDiv.dataset.id;
 
-    // --- 4. MANEJADORES DE EVENTOS ---
-
-    // Evento principal al hacer clic en cualquier parte de la malla
-    mallaContainer.addEventListener('click', (e) => {
-        // Si el clic fue sobre un elemento con la clase 'ramo'
-        if (e.target.classList.contains('ramo')) {
-            const ramoId = e.target.dataset.id;
-            const ramoInfo = ramos.find(r => r.id === ramoId);
-
-            // Si el ramo ya está aprobado, lo des-aprobamos (toggle)
-            if (ramosAprobados.has(ramoId)) {
-                ramosAprobados.delete(ramoId);
-            } else {
-                // Si no está aprobado, verificamos los requisitos
-                const requisitosFaltantes = ramoInfo.requisitos.filter(reqId => !ramosAprobados.has(reqId));
-
-                if (requisitosFaltantes.length > 0) {
-                    // Si faltan requisitos, mostramos el modal de advertencia
-                    const nombresRequisitos = requisitosFaltantes.map(reqId => {
-                        return `<li><strong>${ramos.find(r => r.id === reqId).nombre}</strong></li>`;
-                    }).join('');
-                    mostrarModal(`Para aprobar <strong>${ramoInfo.nombre}</strong>, primero debes cursar: <ul>${nombresRequisitos}</ul>`);
-                } else {
-                    // Si cumple los requisitos, lo aprobamos
-                    ramosAprobados.add(ramoId);
-                }
-            }
+        if (ramoDiv.classList.contains('bloqueado')) {
+            const ramoInfo = ramos.find(r => r.id === id);
+            const nombresRequisitos = ramoInfo.requisitos
+                .filter(reqId => !ramosAprobados.has(reqId))
+                .map(reqId => `<li><strong>${ramos.find(r => r.id === reqId).nombre}</strong></li>`)
+                .join('');
             
-            // Guardamos el nuevo estado y actualizamos la vista
-            guardarEstado(ramosAprobados);
-            actualizarVisualizacion();
+            modalMensaje.innerHTML = `Para cursar <strong>${ramoInfo.nombre}</strong>, necesitas aprobar:<ul>${nombresRequisitos}</ul>`;
+            modal.style.display = 'flex';
+            return;
         }
-    });
 
-    // Eventos para cerrar el modal
-    modalClose.addEventListener('click', ocultarModal);
-    modal.addEventListener('click', (e) => {
-        // Si se hace clic en el fondo oscuro, también se cierra
-        if (e.target === modal) {
-            ocultarModal();
+        // Alternar estado: si está aprobado, se desaprueba, y viceversa.
+        if (ramosAprobados.has(id)) {
+            ramosAprobados.delete(id);
+        } else {
+            ramosAprobados.add(id);
         }
-    });
 
+        guardarEstado();
+        actualizarVisualizacion();
+    };
 
-    // --- 5. INICIALIZACIÓN ---
-    
-    // Muestra una frase motivadora aleatoria al cargar la página
+    // --- 4. INICIALIZACIÓN Y EVENTOS ---
+
+    // Muestra una frase motivadora al azar.
     fraseMotivadoraEl.textContent = frasesMotivadoras[Math.floor(Math.random() * frasesMotivadoras.length)];
     
-    // Dibuja la malla en la pantalla
     generarMalla();
-
-    // Aplica los estilos a los ramos que ya estaban aprobados
     actualizarVisualizacion();
+
+    // Asignar eventos
+    mallaContainer.addEventListener('click', handleRamoClick);
+    modalClose.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
 });
