@@ -1,12 +1,13 @@
 /* --- Variables de Color y Estilos Globales --- */
 :root {
-    --color-fondo: #fdf6f8; /* Un rosa muy pálido para el fondo */
+    --color-fondo: #fdf6f8; /* Rosa muy pálido */
     --color-texto: #4a4a4a;
-    --color-titulo: #d17a8b; /* Rosa más oscuro para los títulos */
+    --color-titulo: #d17a8b; /* Rosa oscuro para títulos */
     --color-ramo: #ffffff;
-    --color-ramo-borde: #e0e0e0;
-    --color-ramo-aprobado: #f7dce3; /* Rosa suave para ramos aprobados */
+    --color-ramo-borde: #e8e8e8;
+    --color-ramo-aprobado: #f7dce3; /* Rosa suave para aprobados */
     --color-ramo-aprobado-texto: #b36b7d;
+    --color-ramo-bloqueado-texto: #b0b0b0; /* Gris claro para bloqueados */
     --fuente-principal: 'Poppins', sans-serif;
 }
 
@@ -16,7 +17,6 @@ body {
     color: var(--color-texto);
     margin: 0;
     padding: 20px;
-    line-height: 1.6;
 }
 
 /* --- Cabecera y Títulos --- */
@@ -35,24 +35,23 @@ header p {
     color: #888;
 }
 
-/* --- Contenedor Principal de la Malla --- */
+/* --- Contenedor de la Malla --- */
 .malla-container {
     display: flex;
-    flex-direction: row; /* Organiza los semestres en columnas */
+    flex-direction: row;
     gap: 15px;
-    overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
-    padding-bottom: 20px;
+    overflow-x: auto; /* Permite scroll horizontal si no cabe */
+    padding: 20px 10px;
 }
 
 /* --- Columnas de Semestres --- */
 .semestre {
-    flex: 1; /* Cada semestre ocupa el mismo espacio */
-    min-width: 200px; /* Ancho mínimo para cada columna */
-    background-color: #fff;
+    flex: 1;
+    min-width: 220px; /* Ancho mínimo de columna */
+    background-color: #ffffff99; /* Fondo semi-transparente */
     border-radius: 12px;
     padding: 15px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--color-ramo-borde);
+    border: 1px solid #ffffff;
 }
 
 .semestre h2 {
@@ -64,7 +63,7 @@ header p {
     margin-top: 0;
 }
 
-/* --- Cajas de Ramos Individuales --- */
+/* --- Ramos Individuales --- */
 .ramo {
     background-color: var(--color-ramo);
     border: 1px solid var(--color-ramo-borde);
@@ -74,8 +73,7 @@ header p {
     text-align: center;
     font-size: 0.9em;
     cursor: pointer;
-    transition: all 0.3s ease; /* Transición suave para todos los cambios */
-    position: relative;
+    transition: all 0.3s ease;
 }
 
 .ramo:hover {
@@ -83,7 +81,7 @@ header p {
     box-shadow: 0 6px 15px rgba(209, 122, 139, 0.15);
 }
 
-/* --- Estilo para Ramos Aprobados --- */
+/* --- Estilos de Estado de los Ramos --- */
 .ramo.aprobado {
     background-color: var(--color-ramo-aprobado);
     color: var(--color-ramo-aprobado-texto);
@@ -92,26 +90,29 @@ header p {
     font-weight: 600;
 }
 
+.ramo.bloqueado {
+    color: var(--color-ramo-bloqueado-texto);
+    cursor: not-allowed; /* Cambia el cursor para indicar que no es clickeable */
+}
+
 /* --- Diseño Responsivo --- */
 @media (max-width: 768px) {
     body {
         padding: 10px;
     }
-    
     .malla-container {
-        flex-direction: column; /* Apila los semestres verticalmente */
-        overflow-x: hidden;
+        flex-direction: column; /* Apila las columnas en pantallas pequeñas */
     }
 }
 
-/* --- Estilos para el Modal de Requisitos --- */
+/* --- Modal de Advertencia --- */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -136,9 +137,4 @@ header p {
     font-size: 2em;
     cursor: pointer;
     color: #aaa;
-}
-
-.modal-content h2 {
-    color: var(--color-titulo);
-    margin-top: 0;
 }
